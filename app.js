@@ -1,34 +1,4 @@
-/* -----  how to read and print from command line --------*/
-    /*const profileDataArgs = process.argv.slice(2, process.argv.length);
-    console.log(profileDataArgs);
-    const printProfileData = (profileDataArr) => {
-        profileDataArr.forEach(profileItem => console.log(profileItem));
-    };
-    printProfileData(profileDataArgs);*/
-
-/* -----  how to generate webpage using 'fs' --------*/
-    // const fs = require('fs');
-    // const generatePage = require('./src/page-template.js');
-    // const profileDataArgs = process.argv.slice(2, process.argv.length); // variable that holds the user command-line arguments
-    // const [name, github] = profileDataArgs;
-
-    // fs.writeFile('index.html', generatePage(name, github), err => {
-    //     if (err) throw err;
-    
-    //     console.log('Portfolio complete! Check out index.html to see the output!');
-    // });
-
-/* ----------- how to use inquirer  ----------------- */
-// inquirer
-//   .prompt([
-//     {
-//       type: 'input',
-//       name: 'name',
-//       message: 'What is your name?'
-//     }
-//   ])
-//   .then(answers => console.log(answers));
-const fs = require('fs');
+const { writeFile, copyFile } = require('./utils/generate-site.js');
 const generatePage = require('./src/page-template.js');
 const inquirer = require('inquirer');
 /* ---- Profile questions --------*/
@@ -156,11 +126,18 @@ const promptProject = portfolioData => {
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
-    const pageHTML = generatePage(portfolioData);
-
-    fs.writeFile('./index.html', pageHTML, err => {
-      if (err) throw new Error(err);
-
-      console.log('Page created! Check out index.html in this directory to see it!');
-    });
-}); 
+    return generatePage(portfolioData);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
+  .catch(err => {
+    console.log(err);
+  });
